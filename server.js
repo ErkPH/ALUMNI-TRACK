@@ -1,29 +1,28 @@
 const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
-const path = require('path'); // Tambahkan path untuk handle lokasi file
+const path = require('path');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Gunakan process.cwd() agar Vercel mencari file di root directory project
+// Path absolut untuk Vercel
 const dataPath = path.join(process.cwd(), 'data_alumni_final.json');
 
-// Gunakan try-catch agar server tidak langsung crash jika file JSON belum terbaca
 let alumniData = [];
 try {
     const rawData = fs.readFileSync(dataPath, 'utf8');
     alumniData = JSON.parse(rawData);
-    console.log("Database loaded successfully");
+    console.log("Database loaded: " + alumniData.length + " records");
 } catch (err) {
-    console.error("Error reading database file:", err.message);
+    console.error("Gagal baca JSON:", err.message);
 }
 
 const AUTH = { user: "admin", pass: "umm2024" };
 
-// Route untuk serve file statis (HTML, CSS, JS) di Vercel
+// Serve file statis (HTML, CSS, JS)
 app.use(express.static(path.join(process.cwd())));
 
 app.get('/', (req, res) => {
@@ -69,9 +68,10 @@ app.get('/api/search', (req, res) => {
     });
 });
 
-// Penting untuk Vercel: Export app sebagai module
+// WAJIB UNTUK VERCEL
 module.exports = app;
 
-// Tetap simpan listen untuk testing di lokal
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server aktif di port ${PORT}`));
+// Jalankan hanya di lokal
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(3000, () => console.log("Server lokal jalan di port 3000"));
+}

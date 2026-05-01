@@ -11,12 +11,12 @@
 
     <!-- LOGIN SECTION -->
     <div id="loginPage" class="fixed inset-0 z-[100] bg-slate-900 flex items-center justify-center p-4">
-        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md">
-            <h2 class="text-2xl font-black mb-6 text-center text-blue-600 uppercase">Admin Access</h2>
+        <div class="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md text-center">
+            <h2 class="text-2xl font-black mb-6 text-blue-600 uppercase">Admin Access</h2>
             <div class="space-y-4">
                 <input type="text" id="uInp" placeholder="Username" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
                 <input type="password" id="pInp" placeholder="Password" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
-                <button onclick="doLogin()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold shadow-lg">Login Sistem</button>
+                <button onclick="doLogin()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold shadow-lg hover:bg-blue-700 transition">Login Sistem</button>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@
                 <h1 class="text-4xl font-black text-slate-900 tracking-tight">UMM Alumni Tracking</h1>
                 <p class="text-slate-500 mt-1">Sistem Pemetaan Karir Lulusan Terintegrasi.</p>
             </div>
-            <button onclick="location.reload()" class="bg-white border px-6 py-2 rounded-xl text-sm font-bold shadow-sm">Logout</button>
+            <button onclick="location.reload()" class="bg-white border px-6 py-2 rounded-xl text-sm font-bold shadow-sm hover:bg-slate-50">Logout</button>
         </header>
 
         <!-- STATS -->
@@ -51,7 +51,7 @@
         <section class="bg-white rounded-[2.5rem] shadow-sm border p-8">
             <div class="flex gap-4 mb-8">
                 <input type="text" id="search" placeholder="Cari Nama atau NIM..." class="flex-1 p-5 bg-slate-50 border rounded-2xl outline-none focus:ring-4 focus:ring-blue-100">
-                <button onclick="currPage=1; doSearch()" class="bg-blue-600 text-white px-10 rounded-2xl font-bold shadow-lg">Cari Alumni</button>
+                <button onclick="currPage=1; doSearch()" class="bg-blue-600 text-white px-10 rounded-2xl font-bold shadow-lg hover:bg-blue-700">Cari Alumni</button>
             </div>
 
             <div class="overflow-x-auto">
@@ -83,7 +83,7 @@
     </main>
 
     <!-- MODAL DETAIL -->
-    <div id="detailModal" class="fixed inset-0 bg-slate-900/60 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/60 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white w-full max-w-4xl max-h-[85vh] overflow-hidden rounded-[2.5rem] shadow-2xl flex flex-col">
             <div class="p-8 border-b flex justify-between items-center bg-slate-50/50">
                 <h2 id="detNama" class="text-3xl font-black text-slate-900 leading-none"></h2>
@@ -94,19 +94,33 @@
     </div>
 
     <script>
-        const API = "http://localhost:3000/api";
+        // OTOMATIS SESUAI LINK HOSTING
+        const API = window.location.origin + "/api";
         let currPage = 1;
         let memData = [];
 
         async function doLogin() {
             const u = document.getElementById('uInp').value;
             const p = document.getElementById('pInp').value;
-            const res = await fetch(`${API}/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username:u, password:p})});
-            if(res.ok) {
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('mainContent').classList.remove('hidden');
-                loadStats(); doSearch();
-            } else alert("Akses Ditolak!");
+            try {
+                const res = await fetch(`${API}/login`, { 
+                    method:'POST', 
+                    headers:{'Content-Type':'application/json'}, 
+                    body:JSON.stringify({username:u, password:p})
+                });
+                
+                if(res.ok) {
+                    document.getElementById('loginPage').classList.add('hidden');
+                    document.getElementById('mainContent').classList.remove('hidden');
+                    loadStats(); 
+                    doSearch();
+                } else {
+                    alert("Akses Ditolak! Periksa Username & Password.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Gagal terhubung ke server.");
+            }
         }
 
         async function loadStats() {
@@ -151,12 +165,10 @@
             document.getElementById('detNama').innerText = item['Nama Lulusan'];
             
             document.getElementById('detFields').innerHTML = Object.entries(item).filter(([k])=>k!=='is_verified').map(([k,v])=>{
-                // Logika Clickable Links untuk LinkedIn dan Sosial Media Kantor
                 let displayValue = v || '-';
-                if ((k === 'Linkedin' || k === 'Sosial Media Kantor') && v !== '-') {
+                if ((k === 'Linkedin' || k === 'Sosial Media Kantor' || k.includes('IG')) && v && v !== '-') {
                     displayValue = `<a href="${v}" target="_blank" class="text-blue-600 underline break-all hover:text-blue-800 transition">${v}</a>`;
                 }
-
                 return `
                     <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                         <p class="text-[9px] text-slate-400 font-black uppercase mb-1">${k}</p>
