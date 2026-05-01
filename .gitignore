@@ -1,34 +1,15 @@
-# Dependency folders (Sudah kamu hapus, tapi wajib di-ignore agar tidak masuk lagi jika di-install ulang)
+# Dependencies
 node_modules/
 .venv/
 .venv_win/
-env/
-venv/
 
-# Data Mentah Alumni (Penting: Menghindari kebocoran data pribadi ke publik)
+# Data Storage
 *.xlsx
-*.xls
-*.csv
-
-# Database JSON (Database lokal yang berisi 142rb+ data alumni)
-data_alumni_final.json
-data_alumni_final_2.json
 *.json
 !package.json
 !package-lock.json
 
-# Script Rahasia (Menyembunyikan logika pengolahan data/autofill dari dosen)
-entah.py
-prepare.py
-prepare_data.py
-test.py
-
-# System files & logs
-.DS_Store
-Thumbs.db
+# Development Scripts
+*.py
 *.log
-npm-debug.log*
-
-# IDE Folders
 .vscode/
-.idea/
