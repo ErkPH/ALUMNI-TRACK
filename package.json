@@ -1,13 +1,18 @@
 {
   "name": "alumni-track",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "UMM Alumni Tracking System with Automated ETL",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "alumni",
+    "tracking",
+    "umm"
+  ],
+  "author": "Erik Putra Hernanda",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.6",
